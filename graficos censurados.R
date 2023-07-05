@@ -1,18 +1,23 @@
-
-#Censura a la derecha
-#porcentaje de censura
-p=0.86
 #tamaño de muestra
 n=5
 q = 20
 #se considera un proceso estandarizado
 media=0
 sigma=1
+muestra = rnorm(n = n*q,mean = media,sd = sigma)
+#Censura a la derecha
+#porcentaje de censura
+p=0.86
+a=0.5
+c4=0.940
+b=1.5
+censpar=function(muestra,p,tipo, a, b, c4){
 
+if(tipo==1){
 #identificando el cuantil para datos censurados
 k=qnorm(p,0,1,lower.tail=FALSE)
 
-muestra = rnorm(n = n*q,mean = media,sd = sigma)
+
 muestra_obs = muestra
 cc = muestra_obs > k
 r = sum(1 - cc)
@@ -46,6 +51,8 @@ while(error > 1e-7){
 }
 
 cbind(muI,sigmaI)
+mud=muI
+sigd=sigmaI
 
 # 
 # 
@@ -69,11 +76,11 @@ UCL1= muI - val*sigmaI # este se prueba hasta que alcanzo el alpha deseado
 #mientras se cumplan el número de simulaciones RLS
 while(numRLs< RLs){
   #genera muestra
-  a=rnorm(n,muI,sigmaI)
+  a1=rnorm(n,muI,sigmaI)
   #se reemplaza los valores censurados por el peso
-  a[a>=k]= wc
+  a1[a1>=k]= wc
   #se estandariza la media
-  z = mean(a)
+  z = mean(a1)
   
   counter=counter+1
   
@@ -108,11 +115,11 @@ UCL1= val*sigmaI # este se prueba hasta que alcanzo el alpha deseado
 #mientras se cumplan el número de simulaciones RLS
 while(numRLs< RLs){
   #genera muestra
-  a=rnorm(n,muI,sigmaI)
+  a1=rnorm(n,muI,sigmaI)
   #se reemplaza los valores censurados por el peso
-  a[a>=k]= wc
+  a1[a1>=k]= wc
   #se estandariza la media
-  z = sd(a)
+  z = sd(a1)
   
   counter=counter+1
   
@@ -127,29 +134,23 @@ while(numRLs< RLs){
   
 }
 
-ARL=mean(vectorRL)
+ARLs=mean(vectorRL)
 
 #numero medio de muestras hasta que hubo una señal
-1/ARL
+1/ARLs
 #1/arl es el valor de alfa.
 
 
-
+}
 #***********************************************
 #censura a la izquierda
 #porcentaje de censura
-p=0.84
-#tamaño de muestra
-n=5
-q = 20
-#se considera un proceso estandarizado
-media=0
-sigma=1
 
+  if(tipo==2){
 #identificando el cuantil para datos censurados
 k=qnorm(p,0,1,lower.tail=TRUE)
 
-muestra = rnorm(n = n*q,mean = media,sd = sigma)
+
 muestra_obs = muestra
 cc = muestra_obs <k
 r = sum(1 - cc)
@@ -183,6 +184,8 @@ while(error > 1e-7){
 }
 
 cbind(muI,sigmaI)
+mud=muI
+sigd=sigmaI
 
 # 
 # 
@@ -206,11 +209,11 @@ UCL1= muI + val*sigmaI # este se prueba hasta que alcanzo el alpha deseado
 #mientras se cumplan el número de simulaciones RLS
 while(numRLs< RLs){
   #genera muestra
-  a=rnorm(n,muI,sigmaI)
-  #se reemplaza los valores censurados por el peso
-  a[a<=k]= wc
+  a1=rnorm(n,muI,sigmaI)
+  1#se reemplaza los valores censurados por el peso
+  a1[a1<=k]= wc
   #se estandariza la media
-  z = mean(a)
+  z = mean(a1)
   
   counter=counter+1
   
@@ -245,11 +248,11 @@ UCL1= val*sigmaI # este se prueba hasta que alcanzo el alpha deseado
 #mientras se cumplan el número de simulaciones RLS
 while(numRLs< RLs){
   #genera muestra
-  a=rnorm(n,muI,sigmaI)
+  a1=rnorm(n,muI,sigmaI)
   #se reemplaza los valores censurados por el peso
-  a[a<=k]= wc
+  a1[a1<=k]= wc
   #se estandariza la media
-  z = sd(a)
+  z = sd(a1)
   
   counter=counter+1
   
@@ -264,29 +267,22 @@ while(numRLs< RLs){
   
 }
 
-ARL=mean(vectorRL)
+ARLs=mean(vectorRL)
 
 #numero medio de muestras hasta que hubo una señal
-1/ARL
+1/ARLs
 #1/arl es el valor de alfa.
 
-
+}
 #***********************************************
 #censura intervalar
 #porcentaje de censura
-b=1.5
-a=0.5
-#tamaño de muestra
-n=5
-q = 20
-#se considera un proceso estandarizado
-media=0
-sigma=1
+
+if(tipo==3){
 p=pnorm(b,0,1)-pnorm(a,0,1)
 #identificando el cuantil para datos censurados
 #k=qnorm(p,0,1,lower.tail=TRUE)
 
-muestra = rnorm(n = n*q,mean = media,sd = sigma)
 muestra_obs = muestra
 cc = ((muestra_obs >a)&(muestra_obs<=b))
 r = sum(1 - cc)
@@ -322,6 +318,8 @@ while(error > 1e-7){
 }
 
 cbind(muI,sigmaI)
+mud=muI
+sigd=sigmaI
 
 # 
 # 
@@ -337,8 +335,8 @@ RLs=1000
 counter = 0
 numRLs = 0
 vectorRL=0
-val1 = 1.39
-val2=-1.39
+val1 = 1.35
+val2=-1.35
 
 #limite isuperior grafico
 UCL2= muI + val1*sigmaI # este se prueba hasta que alcanzo el alpha deseado
@@ -377,8 +375,8 @@ RLs=1000
 counter = 0
 numRLs = 0
 vectorRL=0
-c4=0.940
-val1 = 3.2
+
+val1 = 3.1
 b3=c4-val1*sqrt(1-(c4*c4))
 b4=c4+val1*sqrt(1-(c4*c4))
 b3=ifelse(b3<0,0,b3)
@@ -411,8 +409,13 @@ while(numRLs< RLs){
   
 }
 
-ARL=mean(vectorRL)
+ARLs=mean(vectorRL)
 
 #numero medio de muestras hasta que hubo una señal
-1/ARL
+1/ARLs
 #1/arl es el valor de alfa.
+}
+  
+  return(c(mud, sigd,ARL,ARLs))
+}
+censpar(muestra, p, 3,a,b,c4)
